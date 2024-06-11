@@ -1,0 +1,6 @@
+train: ../data/images/train
+val: ../data/images/test/
+
+nc: 1
+
+names: ['SHIP']
