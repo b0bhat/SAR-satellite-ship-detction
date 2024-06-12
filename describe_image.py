@@ -1,15 +1,16 @@
 import cv2
+import sys
 
-image_path = 'data/Gao_ship_hh_02016082544040302'
+image_path = sys.argv[1]
 
-image = cv2.imread(image_path + '.jpg')
+image = cv2.imread('data/images/' + image_path + '.jpg')
 
 class_list = ['SHIP']
 colors = [(0, 255, 0)]
 
 height, width, _ = image.shape
 
-with open(image_path + '.txt', "r") as file1:
+with open('data/labels/' + image_path + '.txt', "r") as file1:
     for line in file1.readlines():
         split = line.split(" ")
 

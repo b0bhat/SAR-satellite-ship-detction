@@ -1,24 +1,49 @@
+import json
+import numpy as np
 import os
 import shutil
-import random
+from sklearn.model_selection import train_test_split
 
-full_data_path = 'data/'
-extension_allowed = '.jpg'
-split_percentage = 90
+with open('val.json') as f:
+    data = json.load(f)
 
-files = [file[:-len(extension_allowed)] for file in os.listdir(full_data_path) if file.endswith(extension_allowed)]
-random.shuffle(files)
+image_dir = 'val/'
+image_output = 'data/images/'
+text_output = 'data/labels/'
 
-split_index = int(split_percentage * len(files) / 100)
-training_files = files[:split_index]
-validation_files = files[split_index:]
+image_ids = [image['id'] for image in data['images']]
+train_ids, test_ids = train_test_split(image_ids, test_size=0.2, random_state=42)
 
-def copy_files(file_list, img_dest, lbl_dest):
-    for file in file_list:
-        shutil.copy2(os.path.join(full_data_path, file + extension_allowed), img_dest)
-        shutil.copy2(os.path.join(full_data_path, file + '.txt'), lbl_dest)
+for image in data['images']:
+    img_id = image['id']
+    img_file_name = image['file_name']
+    img_width = image['width']
+    img_height = image['height']
+    
+    annotations = [ann for ann in data['annotations'] if ann['image_id'] == img_id]
+    if not annotations:
+        continue
+    
+    bboxes = np.array([ann['bbox'] for ann in annotations])
+    category_ids = np.array([ann['category_id'] for ann in annotations])
 
-copy_files(training_files, 'data/images/train/', 'data/labels/train/')
-copy_files(validation_files, 'data/images/test/', 'data/labels/test/')
+    x_center = (bboxes[:, 0] + bboxes[:, 2] / 2) / img_width
+    y_center = (bboxes[:, 1] + bboxes[:, 3] / 2) / img_height
+    width = bboxes[:, 2] / img_width
+    height = bboxes[:, 3] / img_height
 
-print("Finished")
+    yolo_format = np.column_stack((category_ids, x_center, y_center, width, height))
+
+    if img_id in train_ids:
+        image_output_dir = image_output + 'train/'
+        label_output_dir = text_output + 'train/'
+    else:
+        image_output_dir = image_output + 'test/'
+        label_output_dir = text_output + 'test/'
+
+    txt_file_path = os.path.join(label_output_dir, f'{img_id}.txt')
+    np.savetxt(txt_file_path, yolo_format, fmt='%d %.6f %.6f %.6f %.6f')
+
+    src_image_path = os.path.join(image_dir, img_file_name)
+    dst_image_path = os.path.join(image_output_dir, f'{img_id}.jpg')
+    shutil.copyfile(src_image_path, dst_image_path)

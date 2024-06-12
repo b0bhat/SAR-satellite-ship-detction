@@ -1,3 +1,5 @@
 overlay/
 yolov5/
 data/
+other/
+val/
