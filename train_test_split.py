@@ -11,6 +11,9 @@ image_dir = 'val/'
 image_output = 'data/images/'
 text_output = 'data/labels/'
 
+train_dir = 'train/'
+test_dir = 'test/'
+
 image_ids = [image['id'] for image in data['images']]
 train_ids, test_ids = train_test_split(image_ids, test_size=0.2, random_state=42)
 
@@ -35,11 +38,11 @@ for image in data['images']:
     yolo_format = np.column_stack((category_ids, x_center, y_center, width, height))
 
     if img_id in train_ids:
-        image_output_dir = image_output + 'train/'
-        label_output_dir = text_output + 'train/'
+        image_output_dir = image_output + train_dir
+        label_output_dir = text_output + train_dir
     else:
-        image_output_dir = image_output + 'test/'
-        label_output_dir = text_output + 'test/'
+        image_output_dir = image_output + test_dir
+        label_output_dir = text_output + test_dir
 
     txt_file_path = os.path.join(label_output_dir, f'{img_id}.txt')
     np.savetxt(txt_file_path, yolo_format, fmt='%d %.6f %.6f %.6f %.6f')
