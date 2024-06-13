@@ -2,7 +2,7 @@
 git clone the YOLOv5 github into directory and setup
 
 
-<img src="annotation.png" width=50%>
+<img src="ex.png" width=80%>
 
 Dataset Processing
 - Using the HRSID dataset

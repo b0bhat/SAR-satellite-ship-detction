@@ -1,5 +1,10 @@
 overlay/
-yolov5/
+yolov5/*
+!yolov5/runs
+yolov5/runs/*
+!yolov5/runs/train
+yolov5/runs/train/*
+!yolov5/runs/train/exp9
 data/
 other/
 val/
