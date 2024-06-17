@@ -5,6 +5,7 @@ yolov5/runs/*
 !yolov5/runs/train
 yolov5/runs/train/*
 !yolov5/runs/train/exp9
+yolov8/
 data/
 other/
 val/
